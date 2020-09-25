@@ -1,0 +1,41 @@
+Description: >-
+  AWS CloudFormation infrastructure for Udagram app
+  Details: description.txt
+  
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed to resource names
+    Type: String
+
+  VpcCIDR: 
+    Description: Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 10.0.0.0/16
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsHostnames: true
+      Tags: 
+        - Key: Name 
+          Value: !Ref EnvironmentName
+  
+  S3BucketCodeSrc:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: udc-udagram-code-src
+
+Outputs:
+  VPC: 
+    Description: A reference to the created VPC
+    Value: !Ref VPC
+    Export:
+      Name: !Sub ${EnvironmentName}-VPCID
+
+  S3BucketCodeSrc: 
+    Description: A reference to created S3 bucket
+    Value: !Ref S3BucketCodeSrc
+    Export:
+      Name: !Sub ${EnvironmentName}-S3-bucket

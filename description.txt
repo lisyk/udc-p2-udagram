@@ -1,0 +1,29 @@
+Infrastructure elements:
+  - VPC
+  - Private subnets in two AZ
+  - Internet Gateways
+  - S3 bucket
+  - IAM Role for EC2 to use S3
+  - Launch configuration (2 x vCPUs, RAM 4GB, HHD 10GB, OS Ubuntu 18)
+  - Auto Scalling group
+Udagram communicates on the default HTTP Port: 80
+so servers need this inbound port open since it will be used with the Load Balancer 
+and the Load Balancer Health Check. 
+As for outbound, the servers will need unrestricted internet access 
+to be able to download and update its software.
+
+The load balancer should allow all public traffic (0.0.0.0/0) on port 80 inbound, 
+which is the default HTTP port. 
+Outbound, it will only be using port 80 to reach the internal servers.
+
+The application needs to be deployed into private subnets with a Load Balancer located in a public subnet.
+
+Output the public URL of the LoadBalancer.
+
+Add http:// in front of the load balancer DNS Name in the output.
+
+**********************
+This template deploys a VPC, with a pair of public and private subnets spread 
+across two Availabilty Zones. It deploys an Internet Gateway, with a default 
+route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), 
+and default routes for them in the private subnets.
