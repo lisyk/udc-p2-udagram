@@ -47,38 +47,6 @@ Resources:
     Properties: 
       BucketName: udc-udagram-code-src
 
-  UdagramS3EC2Role:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - ec2.amazonaws.com
-          Action:
-          - sts:AssumeRole
-
-  IAMPolicies:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: ec2AccessS3 
-      PolicyDocument:
-        Statement:
-        - Effect: Allow
-          Action:
-          - "s3:Get*"
-          - "s3:List*"
-          Resource: "*"
-      Roles:
-      - !Ref UdagramS3EC2Role
-
-  ProfileWithRolesForOurApp:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Roles:
-        - !Ref UdagramS3EC2Role
-
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:

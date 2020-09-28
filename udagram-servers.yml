@@ -24,6 +24,38 @@ Resources:
         FromPort: 80
         ToPort: 80
         CidrIp: 0.0.0.0/0
+  
+  UdagramS3EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+
+  IAMPolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ec2AccessS3 
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+          - "s3:Get*"
+          - "s3:List*"
+          Resource: "*"
+      Roles:
+      - !Ref UdagramS3EC2Role
+
+  ProfileWithRolesForOurApp:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref UdagramS3EC2Role
 
   WebServerSecGroup:
     Type: AWS::EC2::SecurityGroup
@@ -34,8 +66,8 @@ Resources:
           !Sub "${EnvironmentName}-VPCID"
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: 8080
-        ToPort: 8080
+        FromPort: 80
+        ToPort: 80
         CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
         FromPort: 22
@@ -58,9 +90,12 @@ Resources:
           apt-get install apache2 -y
           systemctl start apache2.service
           cd /var/www/html
+          echo -e '<html>\n\t<body>\n\t\t<h1>Hello World!</h1>\n\t</body>\n</html>' > /var/www/html/index.html
           aws s3 cp s3://udc-udagram-code-src/udagram-code.zip .
           unzip -o udagram-code.zip
-      ImageId: ami-0312698c6e3b4b373
+          cp udagram-code/index.html .
+      ImageId: ami-07a29e5e945228fa1
+      IamInstanceProfile: !Ref ProfileWithRolesForOurApp
       KeyName: ec2VpcUdacity-west
       SecurityGroups:
       - Ref: WebServerSecGroup
@@ -119,7 +154,7 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 8
       HealthyThresholdCount: 2
-      Port: 8080
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 5
       VpcId: 
