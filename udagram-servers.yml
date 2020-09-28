@@ -159,3 +159,10 @@ Resources:
       VpcId: 
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
+
+Outputs:
+  LoadBalancerDNS:
+    Description: LoadBalancer DNS to access the application
+    Value: !Join [ "", [ "http://", !GetAtt WebAppLB.DNSName ] ]
+    Export:
+      Name: !Sub "${EnvironmentName}-LB-DNS"
