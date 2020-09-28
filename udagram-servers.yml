@@ -90,10 +90,12 @@ Resources:
           apt-get install apache2 -y
           systemctl start apache2.service
           cd /var/www/html
-          echo "Udagram, it works!" > index.html
+          rm -f index.html
+          aws s3 cp s3://udc-udagram-code-src/udagram-code.zip .
+          unzip -o udagram-code.zip
+          cp udagram-code/index.html .
       ImageId: ami-07a29e5e945228fa1
       IamInstanceProfile: !Ref ProfileWithRolesForOurApp
-      KeyName: ec2VpcUdacity-west
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.medium
